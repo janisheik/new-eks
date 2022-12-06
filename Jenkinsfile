@@ -14,7 +14,7 @@ pipeline {
                 echo "buid docker image"
                 
                 sh 'aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/c9e3o3h3'
-                sh 'docker build -t eks-application-deployment .
+                sh 'docker build -t eks-application-deployment .'
                 sh 'docker tag eks-application-deployment:latest public.ecr.aws/c9e3o3h3/eks-application-deployment:latest'
                 sh 'docker push public.ecr.aws/c9e3o3h3/eks-application-deployment:latest'
                
