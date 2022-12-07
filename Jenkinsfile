@@ -1,25 +1,35 @@
 pipeline {
     agent any
-
+    environment {
+        registry = "463702037504.dkr.ecr.us-east-2.amazonaws.com/public.ecr.aws/c9e3o3h3/nginx"
+    }
+   
     stages {
-         stage ('git clone') {
+        stage('Cloning Git') {
             steps {
-        echo "code is building"
-         git 'https://github.com/janisheik/new-eks.git'
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '', url: 'https://github.com/janisheik/new-eks.git]]])     
             }
         }
-        
-        stage('build docker docker image') {
-            steps {
-                echo "buid docker image"
-                
-                sh 'aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/c9e3o3h3'
-                sh 'docker build -t nginx .'
-                sh 'docker tag nginx:latest public.ecr.aws/c9e3o3h3/nginx:1.23'
-                sh 'docker push  public.ecr.aws/c9e3o3h3/nginx:1.23'
-               
-            }
+  
+    // Building Docker images
+    stage('Building image') {
+      steps{
+        script {
+          dockerImage = docker.build registry
         }
+      }
+    }
+   
+    // Uploading Docker images into AWS ECR
+    stage('Pushing to ECR') {
+     steps{  
+         script {
+                sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 463702037504.dkr.ecr.us-east-1.amazonaws.com'
+                sh 'docker push 463702037504.dkr.ecr.us-east-1.amazonaws.com/public.ecr.aws/c9e3o3h3/nginx:latest'
+         }
+        }
+      }
+
       
         stage('kubectl deploy'){ 
        steps
