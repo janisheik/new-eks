@@ -27,6 +27,7 @@ pipeline {
      steps{  
          script {
                 sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 463702037504.dkr.ecr.us-east-1.amazonaws.com'
+                sh 'docker tag nginx:latest public.ecr.aws/c9e3o3h3/nginx:latest'
                 sh 'docker push 463702037504.dkr.ecr.us-east-1.amazonaws.com/public.ecr.aws/c9e3o3h3/nginx:latest'
          }
         }
