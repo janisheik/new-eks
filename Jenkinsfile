@@ -5,11 +5,13 @@ pipeline {
     }
    
     stages {
-        stage('Cloning Git') {
+         stage ('git clone') {
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '', url: 'https://github.com/janisheik/new-eks.git]]])     
+        echo "code is building"
+         git 'https://github.com/janisheik/new-eks.git'
             }
         }
+
   
     // Building Docker images
     stage('Building image') {
